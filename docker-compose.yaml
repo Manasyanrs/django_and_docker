@@ -3,7 +3,10 @@ version: "3.9"
 services:
   app:
     container_name: "docker_app"
+    depends_on:
+      - postgres
     build:
+      context: .
       dockerfile: ./Dockerfile
     command:
       - "python3"
@@ -12,3 +15,30 @@ services:
       - "0.0.0.0:8001"
     ports:
       - "8000:8001"
+    volumes:
+      - .:/app
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+
+  postgres:
+    container_name: "psql"
+    image: postgres:13
+    restart: always
+    env_file: ".env"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+
+volumes:
+  postgres_data:
