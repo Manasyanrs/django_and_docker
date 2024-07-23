@@ -8,11 +8,18 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+#    command:
+#      - "python3"
+#      - "manage.py"
+#      - "runserver"
+#      - "0.0.0.0:8001"
     command:
-      - "python3"
-      - "manage.py"
-      - "runserver"
-      - "0.0.0.0:8001"
+      - "sh"
+      - "-c"
+      - |
+        python manage.py migrate &&
+        python create_superuser.py &&
+        python manage.py runserver 0.0.0.0:8001
     ports:
       - "8000:8001"
     volumes:
